@@ -12,8 +12,493 @@
 <body>
     <div id="root"></div>
     <script type="text/babel">
+      const { useState } = React;
+
+      function InteractiveDeploymentGuide() {
+        const [responses, setResponses] = useState({});
+        const [currentStep, setCurrentStep] = useState('setup');
+        const [completedSteps, setCompletedSteps] = useState(new Set());
+
+        const handleResponse = (key, value) => {
+          setResponses(prev => ({ ...prev, [key]: value }));
+        };
+
+        const markStepComplete = (step) => {
+          setCompletedSteps(prev => new Set([...prev, step]));
+        };
+
+        const OptionButton = ({ onClick, children, selected = false }) => (
+          <button
+            onClick={onClick}
+            className={`p-3 rounded-lg border-2 transition-all ${
+              selected 
+                ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                : 'border-gray-300 bg-white hover:border-blue-300 hover:bg-blue-50'
+            }`}
+          >
+            {children}
+          </button>
+        );
+
+        const StepHeader = ({ stepNumber, title, completed = false }) => (
+          <div className={`flex items-center mb-4 ${completed ? 'opacity-60' : ''}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${
+              completed ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'
+            }`}>
+              {completed ? '✓' : stepNumber}
+            </div>
+            <h2 className="text-2xl font-semibold">{title}</h2>
+          </div>
+        );
+
+        const NextButton = ({ onClick, children = "Continue" }) => (
+          <button
+            onClick={onClick}
+            className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors font-semibold"
+          >
+            {children}
+          </button>
+        );
+
+        if (currentStep === 'setup') {
+          return (
+            <div className="max-w-3xl mx-auto p-8">
+              <div className="text-center mb-8">
+                <h1 className="text-3xl font-bold text-gray-800 mb-4">
+                  🚀 Let's Get Your Worksheet Online!
+                </h1>
+                <p className="text-gray-600 text-lg">
+                  I'll create a personalized guide based on what you're working with.
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                <div className="p-6 bg-gray-50 rounded-lg">
+                  <h3 className="text-xl font-semibold mb-4">What operating system are you using?</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <OptionButton
+                      onClick={() => handleResponse('os', 'windows')}
+                      selected={responses.os === 'windows'}
+                    >
+                      🪟 Windows
+                    </OptionButton>
+                    <OptionButton
+                      onClick={() => handleResponse('os', 'mac')}
+                      selected={responses.os === 'mac'}
+                    >
+                      🍎 Mac
+                    </OptionButton>
+                    <OptionButton
+                      onClick={() => handleResponse('os', 'other')}
+                      selected={responses.os === 'other'}
+                    >
+                      🐧 Linux/Other
+                    </OptionButton>
+                  </div>
+                </div>
+
+                <div className="p-6 bg-gray-50 rounded-lg">
+                  <h3 className="text-xl font-semibold mb-4">Do you have a text editor preference?</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <OptionButton
+                      onClick={() => handleResponse('editor', 'basic')}
+                      selected={responses.editor === 'basic'}
+                    >
+                      📝 Just basic (Notepad, TextEdit)
+                    </OptionButton>
+                    <OptionButton
+                      onClick={() => handleResponse('editor', 'vscode')}
+                      selected={responses.editor === 'vscode'}
+                    >
+                      💻 I have VS Code
+                    </OptionButton>
+                    <OptionButton
+                      onClick={() => handleResponse('editor', 'other')}
+                      selected={responses.editor === 'other'}
+                    >
+                      🔧 Something else
+                    </OptionButton>
+                  </div>
+                </div>
+
+                <div className="p-6 bg-gray-50 rounded-lg">
+                  <h3 className="text-xl font-semibold mb-4">What's your GitHub situation?</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <OptionButton
+                      onClick={() => handleResponse('github', 'cli')}
+                      selected={responses.github === 'cli'}
+                    >
+                      ⚡ I have GitHub CLI
+                    </OptionButton>
+                    <OptionButton
+                      onClick={() => handleResponse('github', 'account')}
+                      selected={responses.github === 'account'}
+                    >
+                      ✅ I have an account
+                    </OptionButton>
+                    <OptionButton
+                      onClick={() => handleResponse('github', 'none')}
+                      selected={responses.github === 'none'}
+                    >
+                      ❌ I need everything
+                    </OptionButton>
+                  </div>
+                </div>
+
+                <div className="p-6 bg-gray-50 rounded-lg">
+                  <h3 className="text-xl font-semibold mb-4">How comfortable are you with technology?</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <OptionButton
+                      onClick={() => handleResponse('comfort', 'beginner')}
+                      selected={responses.comfort === 'beginner'}
+                    >
+                      🐣 Beginner - show me everything
+                    </OptionButton>
+                    <OptionButton
+                      onClick={() => handleResponse('comfort', 'intermediate')}
+                      selected={responses.comfort === 'intermediate'}
+                    >
+                      👍 Comfortable - I can follow along
+                    </OptionButton>
+                    <OptionButton
+                      onClick={() => handleResponse('comfort', 'advanced')}
+                      selected={responses.comfort === 'advanced'}
+                    >
+                      🚀 Advanced - just the key steps
+                    </OptionButton>
+                  </div>
+                </div>
+
+                {responses.os && responses.editor && responses.github && responses.comfort && (
+                  <div className="text-center pt-4">
+                    <NextButton onClick={() => setCurrentStep('guide')}>
+                      Create My Personal Guide! 🎯
+                    </NextButton>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        const getEditorInstructions = () => {
+          if (responses.editor === 'basic') {
+            if (responses.os === 'windows') {
+              return "Press Windows key, type 'Notepad', and press Enter";
+            } else if (responses.os === 'mac') {
+              return "Press Cmd+Space, type 'TextEdit', and press Enter. Then go to Format → Make Plain Text";
+            } else {
+              return "Open your system's text editor (like gedit, nano, or vim)";
+            }
+          } else if (responses.editor === 'vscode') {
+            return "Open VS Code (you've got this!)";
+          } else {
+            return "Open your preferred text editor";
+          }
+        };
+
+        const getSaveInstructions = () => {
+          if (responses.github === 'cli') {
+            return "Create a new folder called 'customer-research-worksheet' and save the file as 'index.html' inside it";
+          } else if (responses.os === 'windows') {
+            return "Press Ctrl+S, navigate to your Desktop, name it 'index.html', and make sure to change 'Save as type' to 'All Files' so it doesn't save as .txt";
+          } else if (responses.os === 'mac') {
+            return "Press Cmd+S, navigate to your Desktop, name it 'index.html', and make sure it has the .html extension";
+          } else {
+            return "Save it to your Desktop as 'index.html'";
+          }
+        };
+
+        const isStepComplete = (step) => completedSteps.has(step);
+
+        return (
+          <div className="max-w-4xl mx-auto p-8">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                Your Personalized Deployment Guide
+              </h1>
+              <p className="text-gray-600">
+                {responses.comfort === 'beginner' && "Don't worry - I'll walk you through every detail!"}
+                {responses.comfort === 'intermediate' && "Let's get this done efficiently!"}
+                {responses.comfort === 'advanced' && "Here's your streamlined process!"}
+              </p>
+            </div>
+
+            {/* Step 1: Create the File */}
+            <div className="mb-8 p-6 bg-blue-50 rounded-lg">
+              <StepHeader 
+                stepNumber="1" 
+                title="Create Your HTML File" 
+                completed={isStepComplete('file')} 
+              />
+              
+              {!isStepComplete('file') ? (
+                <div className="space-y-4">
+                  <div className="bg-white p-4 rounded border-l-4 border-blue-500">
+                    <p className="font-semibold text-blue-800 mb-2">What you'll do:</p>
+                    <p>{getEditorInstructions()}</p>
+                  </div>
+                  
+                  <div className="bg-yellow-50 p-4 rounded">
+                    <p className="font-semibold mb-2">📋 Copy this code exactly:</p>
+                    <div className="bg-gray-900 text-green-400 p-4 rounded text-sm overflow-x-auto">
+                      <pre>{`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Research MadLibs Worksheet</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
         // [Your React component code would go here]
         // [Truncated for display - full code provided separately]
+    </script>
+</body>
+</html>`}</pre>
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-4 rounded border-l-4 border-green-500">
+                    <p className="font-semibold text-green-800 mb-2">Save it:</p>
+                    <p>{getSaveInstructions()}</p>
+                  </div>
+
+                  <button
+                    onClick={() => markStepComplete('file')}
+                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                  >
+                    ✓ I've created the file
+                  </button>
+                </div>
+              ) : (
+                <p className="text-green-600 font-semibold">✓ File created successfully!</p>
+              )}
+            </div>
+
+            {/* Step 2: GitHub CLI or Account Setup */}
+            {responses.github === 'cli' ? (
+              <div className="mb-8 p-6 bg-green-50 rounded-lg">
+                <StepHeader 
+                  stepNumber="2" 
+                  title="Deploy with GitHub CLI (Lightning Fast! ⚡)" 
+                  completed={isStepComplete('cli-deploy')} 
+                />
+                
+                {!isStepComplete('cli-deploy') ? (
+                  <div className="space-y-4">
+                    <div className="bg-white p-4 rounded border-l-4 border-green-500">
+                      <p className="font-semibold mb-2">🚀 Super quick deployment:</p>
+                      <div className="bg-gray-900 text-green-400 p-4 rounded font-mono text-sm space-y-2">
+                        <div># Navigate to your folder</div>
+                        <div>cd customer-research-worksheet</div>
+                        <div></div>
+                        <div># Initialize git and add files</div>
+                        <div>git init</div>
+                        <div>git add .</div>
+                        <div>git commit -m "Initial commit"</div>
+                        <div></div>
+                        <div># Create repo and push</div>
+                        <div>gh repo create customer-research-worksheet --public --source=. --remote=origin --push</div>
+                        <div></div>
+                        <div># Enable Pages</div>
+                        <div>gh api repos/:owner/customer-research-worksheet/pages -X POST -f 'source[branch]=main' -f 'source[path]=/'</div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-blue-100 p-4 rounded">
+                      <p className="font-semibold mb-2">🎯 Your site will be live at:</p>
+                      <p className="font-mono bg-white p-2 rounded">
+                        https://[your-username].github.io/customer-research-worksheet
+                      </p>
+                      <p className="text-sm text-gray-600 mt-2">Usually takes 1-2 minutes!</p>
+                    </div>
+
+                    {responses.comfort === 'beginner' && (
+                      <div className="bg-yellow-50 p-4 rounded">
+                        <p className="font-semibold mb-2">💡 What just happened:</p>
+                        <ul className="list-disc list-inside space-y-1 text-sm">
+                          <li>Created a GitHub repository</li>
+                          <li>Uploaded your file</li>
+                          <li>Enabled GitHub Pages</li>
+                          <li>All in about 30 seconds! 🚀</li>
+                        </ul>
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => markStepComplete('cli-deploy')}
+                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                    >
+                      ✓ Deployed with GitHub CLI
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-green-600 font-semibold">✓ Lightning-fast deployment complete! ⚡</p>
+                )}
+              </div>
+            ) : responses.github === 'none' && (
+              <div className="mb-8 p-6 bg-green-50 rounded-lg">
+                <StepHeader 
+                  stepNumber="2" 
+                  title="Create GitHub Account" 
+                  completed={isStepComplete('github')} 
+                />
+                
+                {!isStepComplete('github') ? (
+                  <div className="space-y-4">
+                    <div className="bg-white p-4 rounded border-l-4 border-green-500">
+                      <p className="mb-2">1. Go to <a href="https://github.com" className="text-blue-600 underline" target="_blank">github.com</a></p>
+                      <p className="mb-2">2. Click "Sign up" in the top right</p>
+                      <p className="mb-2">3. Enter your email and create a password</p>
+                      <p className="mb-2">4. Choose a username (this will be in your website URL!)</p>
+                      <p>5. Verify your email when GitHub sends you one</p>
+                    </div>
+                    
+                    {responses.comfort === 'beginner' && (
+                      <div className="bg-yellow-50 p-4 rounded">
+                        <p className="font-semibold mb-2">💡 Tip for beginners:</p>
+                        <p>Choose a professional username if possible - it becomes part of your website address!</p>
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => markStepComplete('github')}
+                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                    >
+                      ✓ I have a GitHub account now
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-green-600 font-semibold">✓ GitHub account ready!</p>
+                )}
+              </div>
+            )}
+
+            {/* Step 3: Upload to GitHub */}
+            <div className="mb-8 p-6 bg-purple-50 rounded-lg">
+              <StepHeader 
+                stepNumber={responses.github === 'no' ? "3" : "2"} 
+                title="Upload to GitHub" 
+                completed={isStepComplete('upload')} 
+              />
+              
+              {!isStepComplete('upload') ? (
+                <div className="space-y-4">
+                  <div className="bg-white p-4 rounded border-l-4 border-purple-500">
+                    <p className="font-semibold mb-2">Create a new repository:</p>
+                    <ol className="list-decimal list-inside space-y-1">
+                      <li>Click the green "New" button (or "+" → "New repository")</li>
+                      <li>Repository name: <code className="bg-gray-200 px-2 py-1 rounded">customer-research-worksheet</code></li>
+                      <li>Make sure "Public" is selected</li>
+                      <li>Check "Add a README file"</li>
+                      <li>Click "Create repository"</li>
+                    </ol>
+                  </div>
+
+                  <div className="bg-white p-4 rounded border-l-4 border-purple-500">
+                    <p className="font-semibold mb-2">Upload your file:</p>
+                    <ol className="list-decimal list-inside space-y-1">
+                      <li>Click "uploading an existing file" link</li>
+                      <li>Drag your <code>index.html</code> file into the box</li>
+                      <li>Add commit message: "Add customer research worksheet"</li>
+                      <li>Click "Commit changes"</li>
+                    </ol>
+                  </div>
+
+                  {responses.comfort === 'beginner' && (
+                    <div className="bg-yellow-50 p-4 rounded">
+                      <p className="font-semibold mb-2">🔍 Can't find the "uploading an existing file" link?</p>
+                      <p>Look for text that says "Get started by creating a new file or uploading an existing file" - click "uploading an existing file"</p>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => markStepComplete('upload')}
+                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                  >
+                    ✓ File uploaded to GitHub
+                  </button>
+                </div>
+              ) : (
+                <p className="text-green-600 font-semibold">✓ File uploaded successfully!</p>
+              )}
+            </div>
+            {/* Step 4: Enable GitHub Pages (Web Interface Only) */}
+            {(responses.github === 'account' || responses.github === 'none') && (
+              <div className="mb-8 p-6 bg-orange-50 rounded-lg">
+                <StepHeader 
+                  stepNumber={responses.github === 'none' ? "4" : "3"} 
+                  title="Make It Live with GitHub Pages" 
+                  completed={isStepComplete('pages')} 
+                />
+              
+              {!isStepComplete('pages') ? (
+                <div className="space-y-4">
+                  <div className="bg-white p-4 rounded border-l-4 border-orange-500">
+                    <p className="font-semibold mb-2">Enable Pages:</p>
+                    <ol className="list-decimal list-inside space-y-1">
+                      <li>Click "Settings" tab (in your repository)</li>
+                      <li>Scroll down and click "Pages" in the left sidebar</li>
+                      <li>Under "Source," select "Deploy from a branch"</li>
+                      <li>Choose "main" branch and "/ (root)" folder</li>
+                      <li>Click "Save"</li>
+                    </ol>
+                  </div>
+
+                  <div className="bg-green-100 p-4 rounded">
+                    <p className="font-semibold mb-2">🎉 Your website URL will be:</p>
+                    <p className="font-mono bg-white p-2 rounded">
+                      https://[your-username].github.io/customer-research-worksheet
+                    </p>
+                    <p className="text-sm text-gray-600 mt-2">It takes 2-3 minutes to go live!</p>
+                  </div>
+
+                  <button
+                    onClick={() => markStepComplete('pages')}
+                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                  >
+                    ✓ GitHub Pages is enabled
+                  </button>
+                </div>
+              ) : (
+                <p className="text-green-600 font-semibold">✓ Your site is live!</p>
+              )}
+            </div>
+            )}
+
+            {/* Final Step */}
+            {(isStepComplete('pages') || isStepComplete('cli-deploy')) && (
+              <div className="p-6 bg-green-100 rounded-lg text-center">
+                <h2 className="text-2xl font-bold text-green-800 mb-4">🚀 Congratulations!</h2>
+                <p className="text-lg mb-4">Your customer research worksheet is now live on the internet!</p>
+                
+                <div className="bg-white p-4 rounded mb-4">
+                  <p className="font-semibold mb-2">What you accomplished:</p>
+                  <ul className="text-left list-disc list-inside space-y-1">
+                    <li>Created a professional web application</li>
+                    <li>Hosted it for free (forever!)</li>
+                    <li>Got a shareable public URL</li>
+                    <li>Learned basic web deployment</li>
+                  </ul>
+                </div>
+
+                <p className="text-gray-700">
+                  Share your URL with anyone who needs help with customer research! 
+                  {responses.comfort === 'beginner' && " You did great for your first deployment! 🎉"}
+                </p>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<InteractiveDeploymentGuide />);
     </script>
 </body>
 </html>
